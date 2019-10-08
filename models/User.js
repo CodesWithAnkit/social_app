@@ -54,18 +54,22 @@ User.prototype.validate = function() {
   }
 };
 
-User.prototype.login = function(callback) {
-  this.cleanUp();
-  usersCollection.findOne(
-    { username: this.data.username },
-    (err, attemptedUser) => {
-      if (attemptedUser && attemptedUser.password == this.data.password) {
-        callback("Congratas");
-      } else {
-        callback("Invalid username");
-      }
-    }
-  );
+User.prototype.login = function() {
+  return new Promise((resolve, reject) => {
+    this.cleanUp();
+    usersCollection
+      .findOne({ username: this.data.username })
+      .then(attemptedUser => {
+        if (attemptedUser && attemptedUser.password == this.data.password) {
+          resolve("Congratas");
+        } else {
+          reject("Invalid username / password");
+        }
+      })
+      .catch(function() {
+        reject("Please try again later...");
+      });
+  });
 };
 User.prototype.register = function() {
   // Step #1: Validate user data
