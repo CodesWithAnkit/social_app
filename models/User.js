@@ -53,6 +53,20 @@ User.prototype.validate = function() {
     this.errors.push("Username cannot exceed 50 charachters.");
   }
 };
+
+User.prototype.login = function(callback) {
+  this.cleanUp();
+  usersCollection.findOne(
+    { username: this.data.username },
+    (err, attemptedUser) => {
+      if (attemptedUser && attemptedUser.password == this.data.password) {
+        callback("Congratas");
+      } else {
+        callback("Invalid username");
+      }
+    }
+  );
+};
 User.prototype.register = function() {
   // Step #1: Validate user data
 
