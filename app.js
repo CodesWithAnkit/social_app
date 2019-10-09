@@ -1,13 +1,13 @@
-const express = require("express");
-const session = require("express-session");
-const MongoStore = require("connect-mongo")(session);
-const flash = require("connect-flash");
+const express = require('express');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+const flash = require('connect-flash');
 const app = express();
 
 // Initiating session for the our App
 let sessionOptions = session({
-  secret: "Javasctipt is sooooooooooooo coool",
-  store: new MongoStore({ client: require("./db") }),
+  secret: 'Javasctipt is sooooooooooooo coool',
+  store: new MongoStore({ client: require('./db') }),
   resave: false,
   saveUninitialized: false,
   cookie: { maxAge: 1000 * 60 * 60 * 24, httpOnly: true }
@@ -15,16 +15,22 @@ let sessionOptions = session({
 
 app.use(sessionOptions);
 app.use(flash());
-const router = require("./router");
+
+app.use(function(req, res, next) {
+  res.locals.user = req.session.user;
+  next();
+});
+
+const router = require('./router');
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.use(express.static("public"));
+app.use(express.static('public'));
 // setting the view of html with ejs engine. I will explore about that
-app.set("views", "views");
-app.set("view engine", "ejs");
+app.set('views', 'views');
+app.set('view engine', 'ejs');
 
-app.use("/", router);
+app.use('/', router);
 
 module.exports = app;
